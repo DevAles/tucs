@@ -3,7 +3,7 @@
 
 use core::panic::PanicInfo;
 
-static OPALA: &[u8] = b"Welcome to TUCS!";
+static WELCOME_MESSAGE: &[u8] = b"Welcome to TUCS!";
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -14,10 +14,10 @@ fn panic(_info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     let vga_buffer = 0xb8000 as *mut u8;
 
-    for (index, &byte) in OPALA.iter().enumerate() {
+    for (index, &byte) in WELCOME_MESSAGE.iter().enumerate() {
         unsafe {
             *vga_buffer.offset(index as isize * 2) = byte;
-            *vga_buffer.offset(index as isize * 2 + 1) = 0xf;
+            *vga_buffer.offset(index as isize * 2 + 1) = 0xF;
         }
     }
 
