@@ -24,3 +24,50 @@ bitflags! {
 
     }
 }
+
+impl COLOR {
+    fn new_scheme(foreground: COLOR, background: COLOR) -> u8 {
+        background.bits() << 4 | foreground.bits()
+    }
+}
+
+struct Character {
+    ascii_character: u8,
+    color: COLOR
+}
+
+struct Buffer {
+    data: [[Character; BUFFER_WIDTH]; BUFFER_HEIGHT]
+}
+
+pub struct Writer {
+    column_position: usize,
+    color: COLOR,
+    buffer: &'static mut Buffer
+}
+
+impl Writer {
+    pub fn write_byte(&mut self, byte: u8) {
+        match byte {
+            b"/n" => self.new_line(),
+            _ => {
+                if self.column_position >= BUFFER_WIDTH {
+                    self.new_line();
+                }
+
+                let row = BUFFER_HEIGHT - 1;
+                let column = &self.column_position;
+                let color = self.color;
+
+                self.buffer.data[row][column] = Character {
+                    ascii_character: byte,
+                    color
+                };
+
+                self.column_position += 1;
+            }
+        }
+    }
+
+    pub fn new_line(&mut self) { /* TODO */ }
+}
