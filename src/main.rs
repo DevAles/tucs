@@ -1,9 +1,13 @@
 #![no_std]
 #![no_main]
 
-use core::panic::PanicInfo;
+pub mod vga;
 
-static WELCOME_MESSAGE: &[u8] = b"Welcome to TUCS!";
+use core::panic::PanicInfo;
+use vga::print;
+
+
+static WELCOME_MESSAGE: &str = "Welcome to TUCS!";
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -12,14 +16,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let vga_buffer = 0xb8000 as *mut u8;
-
-    for (index, &byte) in WELCOME_MESSAGE.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(index as isize * 2) = byte;
-            *vga_buffer.offset(index as isize * 2 + 1) = 0xF;
-        }
-    }
+    print(WELCOME_MESSAGE);
 
     loop {}
 }
