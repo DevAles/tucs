@@ -4,10 +4,9 @@
 pub mod vga;
 
 use core::panic::PanicInfo;
-use vga::print;
 
 
-static WELCOME_MESSAGE: &str = "Welcome to TUCS!";
+static WELCOME_MESSAGE: &str = "Welcome to TUCS! \nSystem Running...";
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -16,7 +15,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    print(WELCOME_MESSAGE);
+    println!("{}", WELCOME_MESSAGE);
 
     loop {}
 }
