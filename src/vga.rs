@@ -1,7 +1,7 @@
 use core::fmt;
 
-use lazy_static::lazy_static;
 use bitflags::bitflags;
+use lazy_static::lazy_static;
 
 use spin::Mutex;
 use volatile::Volatile;
@@ -49,17 +49,17 @@ impl COLOR {
 #[derive(Clone, Copy)]
 pub struct Character {
     pub ascii_character: u8,
-    pub color: u8
+    pub color: u8,
 }
 
 struct Buffer {
-    data: [[Volatile<Character>; BUFFER_WIDTH]; BUFFER_HEIGHT]
+    data: [[Volatile<Character>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 pub struct Writer {
     column_position: usize,
     color: u8,
-    buffer: &'static mut Buffer
+    buffer: &'static mut Buffer,
 }
 
 impl Writer {
@@ -85,7 +85,7 @@ impl Writer {
 
                 self.buffer.data[row][column].write(Character {
                     ascii_character,
-                    color
+                    color,
                 });
 
                 self.column_position += 1;
@@ -96,11 +96,11 @@ impl Writer {
     pub fn write_string(&mut self, string: &str) {
         for character in string.bytes() {
             match character {
-                ASCII_RANGE_START..=ASCII_RANGE_END | b'\n' => self.write_ascii_character(character),
-                b'\r' => self.carriage_return(),
-                _ => {
-                    self.write_ascii_character(0xFE)
+                ASCII_RANGE_START..=ASCII_RANGE_END | b'\n' => {
+                    self.write_ascii_character(character)
                 }
+                b'\r' => self.carriage_return(),
+                _ => self.write_ascii_character(0xFE),
             }
         }
     }
@@ -123,7 +123,7 @@ impl Writer {
     fn clear_row(&mut self, row: usize) {
         let blank = Character {
             ascii_character: b' ',
-            color: self.color
+            color: self.color,
         };
 
         for column in 0..BUFFER_WIDTH {
