@@ -21,9 +21,9 @@ static WELCOME_MESSAGE: &str = "> Welcome to TUCS! \n> System Running...\n
 ";
 
 pub fn panic(info: &PanicInfo) {
-    println!("{}", info);
+    kernel_println!("{}", info);
 }
 
 pub fn run() {
-    println!("{}", WELCOME_MESSAGE);
+    kernel_println!("{}", WELCOME_MESSAGE);
 }
