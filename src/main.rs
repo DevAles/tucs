@@ -5,9 +5,8 @@
 #![test_runner(crate::tests::tester)] // To set a default test runner
 #![reexport_test_harness_main = "test_main"] // To change tester name ("main to test_main")
 
-pub mod vga;
-pub mod tests;
 pub mod kernel;
+pub mod tests;
 
 use core::panic::PanicInfo;
 
@@ -26,4 +25,16 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     loop {}
+}
+
+// Set crate macros
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::kernel::write::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }
