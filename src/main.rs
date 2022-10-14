@@ -1,50 +1,29 @@
 #![no_std]
 #![no_main]
 
-
-#![feature(custom_test_frameworks)]
-#![test_runner(crate::tester)]
+#![feature(custom_test_frameworks)] // To implement a custom test framework
+#![test_runner(crate::tests::tester)] // To set a default test runner
+#![reexport_test_harness_main = "test_main"] // To change tester name ("main to test_main")
 
 pub mod vga;
+pub mod tests;
+pub mod kernel;
 
 use core::panic::PanicInfo;
 
-static WELCOME_MESSAGE: &str = "> Welcome to TUCS! \n> System Running...\n
- _
-| |
-| |_ _   _  ___ ___
-| __| | | |/ __/ __|
-| |_| |_| | (__\\__ \\
- \\__|\\__,_|\\___|___/
-
-         .--.
-        |o_o |
-        |:_/ |
-       //   \\ \\
-      (|     | )
-     /'\\_   _/`\\
-     \\___)=(___/
-";
-
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+pub fn panic(info: &PanicInfo) -> ! {
+    kernel::panic(info);
+
     loop {}
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("{}", WELCOME_MESSAGE);
+    kernel::run();
+
+    #[cfg(test)]
+    test_main();
 
     loop {}
-}
-
-
-#[cfg(test)]
-fn tester(tests: &[&dyn Fn()]) {
-    println!("> Running {} tests", tests.len());
-
-    for test in tests {
-        test();
-    }
 }
