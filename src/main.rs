@@ -1,11 +1,10 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)] // To implement a custom test framework
-#![test_runner(crate::tests::tester)] // To set a default test runner
+#![test_runner(tucs::tester)] // To set a default test runner
 #![reexport_test_harness_main = "test_main"] // To change tester name ("main to test_main")
 
 pub mod kernel;
-pub mod tests;
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -13,6 +12,12 @@ pub fn panic(info: &core::panic::PanicInfo) -> ! {
     kernel::panic(info);
 
     loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    tucs::test_panic(info)
 }
 
 #[no_mangle]
@@ -23,28 +28,6 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     loop {}
-}
-
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => {
-        $crate::tests::serial::_print(format_args!($($arg)*))
-    };
-}
-
-#[macro_export]
-macro_rules! println {
-    () => {
-        $crate::print!("\n")
-    };
-
-    ($fmt:expr) => {
-        $crate::print!(concat!($fmt, "\n"))
-    };
-
-    ($fmt:expr, $($arg:tt)*) => {
-        $crate::print!(concat!($fmt, "\n"), $($arg)*)
-    };
 }
 
 #[macro_export]
